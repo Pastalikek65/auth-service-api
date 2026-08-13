@@ -1,0 +1,20 @@
+# Requires repo secret: POSTMAN_API_KEY
+name: Postman API Tests
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: "0 6 * * *"
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Postman CLI
+        run: curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+      - name: Login to Postman
+        run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
+      - name: Run collection
+        run: postman collection run "postman/auth-service-api.postman_collection.json" -e "postman/auth-service-local.postman_environment.json"
